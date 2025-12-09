@@ -1,142 +1,92 @@
-"use client";
+"use client"; 
+// Указывает, что компонент рендерится на клиенте (Next.js 13+)
 
 import Image from "next/image";
-import Link from "next/link";
-import React, { useState } from "react";
+import Link from "next/link"; 
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import CafeMap from "@/components/CafeMap";
 
-export default function AccountPage() {
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [error, setError] = useState<string>("");
-
-  // 👇 БЕРЁМ API URL из .env.production (или .env.local)
-  const API = process.env.NEXT_PUBLIC_API_URL || "";
-
-  // -----------------------------
-  // LOGIN HANDLER
-  // -----------------------------
-  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setError("");
-
-    try {
-      const res = await fetch(`${API}/login/email`, {
-        method: "POST",
-        credentials: "include", // важно для session cookies
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      if (!res.ok) {
-        let errText = "Неверный email или пароль";
-        try {
-          const errJson = await res.json();
-          if (errJson?.error) errText = errJson.error;
-        } catch {}
-        setError(errText);
-        return;
-      }
-
-      const data = await res.json();
-      console.log("Login success:", data);
-
-      window.location.href = "/profile";
-    } catch (err) {
-      console.error(err);
-      setError("Ошибка соединения с сервером");
-    }
-  };
-
-  // -----------------------------
-  // GOOGLE LOGIN HANDLER
-  // -----------------------------
-  const handleGoogleLogin = () => {
-    // 🔥 теперь Google login тоже через бэкенд Render
-    window.location.href = `${API}/login/google`;
-  };
-
+// Главная страница
+export default function HomePage() {
   return (
-    <main className="relative min-h-screen flex items-center justify-center bg-[#0E0042] font-[Unbounded] px-4">
-      <div className="flex flex-col lg:flex-row w-[1100px] max-w-[95%] bg-[#0E0042] rounded-[20px] overflow-hidden shadow-2xl py-10">
-        {/* Левая часть — форма */}
-        <div className="lg:w-1/2 flex items-center justify-center bg-white/95 rounded-[10px] px-6 py-10">
-          <div className="w-[80%] max-w-[380px] flex flex-col justify-center">
-            <Link href="/" className="flex items-center gap-2 mb-6 hover:opacity-80 transition">
-              <Image src="/логоRS.png" alt="Roll & Soul" width={45} height={45} className="rounded-full" />
-              <span className="text-[#0E0042] text-lg font-semibold">Roll & Soul</span>
-            </Link>
+    <main className="relative w-full min-h-screen bg-white text-[#1F1F1F] font-[Unbounded]">
+      
+      {/* ШАПКА САЙТА */}
+      <Header />
 
-            <h1 className="text-[36px] font-semibold text-[#0E0042] mb-3">Вход в аккаунт</h1>
+      {/* HERO-СЕКЦИЯ (основный приветственный блок) */}
+      <section className="flex flex-col items-center text-center mt-[140px]">
+        
+        {/* Главный заголовок */}
+        <h2 className="text-[#100147] font-semibold text-[40px] leading-[75px] max-w-[1096px]">
+          Сделано с душой — почувствуй вкус Азии
+        </h2>
 
-            <p className="text-[14px] text-[#5C5C5C] leading-[25px] mb-8 font-light">
-              Мы рады вас видеть! Войдите, чтобы забронировать столик.
-            </p>
+        {/* Описание */}
+        <p className="mt-[40px] text-[14px] font-light text-black max-w-[892px] leading-[20px]">
+          Добро пожаловать в <span className="font-semibold">Roll & Soul</span> — уютное азиатское кафе, где каждая деталь сделана с душой.
+          Мы готовим рамен, роллы, бабл-ти и десерты по рецептам, вдохновлённым уличной кухней Азии.
+        </p>
 
-            {/* Ошибка */}
-            {error && <div className="text-red-600 text-sm mb-2">{error}</div>}
+        {/* КНОПКИ */}
+        <div className="flex gap-[30px] mt-[50px]">
+          
+          {/* Перейти в меню */}
+          <Link
+            href="/menu"
+            className="border border-black w-[210px] h-[55px] flex items-center justify-center text-[16px] font-normal text-[#1F1F1F] hover:bg-[#f7f7f7] transition shadow-md"
+          >
+            Посмотреть меню
+          </Link>
 
-            {/* Форма: НЕЗАБЫТЬ - onSubmit установлен здесь */}
-            <form className="flex flex-col gap-4" onSubmit={handleLogin}>
-              <input
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
-                className="border border-[#BDBDBD] rounded-[10px] px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#0E0042]"
-                required
-              />
+          {/* Страница бронирования */}
+          <Link
+            href="/booking"
+            className="bg-[#100147] border border-black text-white w-[210px] h-[55px] flex items-center justify-center text-[16px] font-normal hover:bg-[#1c0f4b] transition shadow-md"
+          >
+            Забронировать
+          </Link>
 
-              <input
-                type="password"
-                placeholder="Пароль"
-                value={password}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
-                className="border border-[#BDBDBD] rounded-[10px] px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#0E0042]"
-                required
-              />
+        </div>
+      </section>
 
-              <button
-                type="submit"
-                className="bg-[#0E0042] text-white py-3 rounded-[10px] mt-2 shadow-md hover:bg-[#1A0075] transition"
-              >
-                Войти
-              </button>
+      {/* БЛОК С АДРЕСАМИ (фон + черное окно + карта) */}
+      <section className="relative mt-[120px] w-full h-[486px]">
+        
+        {/* Фоновая картинка секции */}
+        <Image
+          src="/cafe-bg.jpg"
+          alt="Интерьер кафе"
+          fill
+          className="object-cover"
+        />
 
-              <div className="text-center text-sm mt-3">
-                Нет аккаунта?{" "}
-                <Link href="/register" className="text-[#0E0042] hover:underline">
-                  Создать
-                </Link>
-              </div>
+        {/* Тёмный блок с текстом адресов */}
+        <div className="absolute left-[29px] top-[39px] w-[900px] h-[405px] bg-black/80 p-[40px] z-10">
+          <h3 className="text-white text-[18px] font-medium mb-6">Где нас найти?</h3>
 
-              <div className="text-center text-[16px] text-[#1F1F1F]/50 my-2">или</div>
+          {/* Текст адресов (используется `white-space: pre-line`, чтобы сохранять переносы) */}
+          <p className="text-white text-[18px] font-normal leading-[20px] whitespace-pre-line">
+            {`Город: Алматы
 
-              {/* Google */}
-              <button
-                type="button"
-                onClick={handleGoogleLogin}
-                className="flex items-center justify-center gap-2 border border-[#BDBDBD] rounded-[10px] py-[10px] hover:bg-gray-50 transition w-full"
-              >
-                <Image src="/google-icon.png" alt="Google" width={35} height={35} />
-                <span className="text-[16px] text-black font-medium opacity-50">Продолжить с Google</span>
-              </button>
-            </form>
-          </div>
+1) Атакент: улица Тимирязева, 42
+
+2) Мега центр: улица Макатаева, 127/1 / проспект Сейфуллина, 483
+
+3) Мега центр: улица Розыбакиева, 247`}
+          </p>
         </div>
 
-        {/* Правая часть */}
-        <div className="lg:w-1/2 relative flex items-center justify-center text-white bg-[#0E0042] py-10">
-          <Image src="/sushi.png" alt="Sushi" width={480} height={500} className="object-contain drop-shadow-2xl" />
-
-          <nav className="absolute top-5 right-10 flex gap-6 text-sm text-white">
-            <Link href="/" className="hover:underline">О нас</Link>
-            <Link href="/menu" className="hover:underline">Меню</Link>
-            <Link href="/booking" className="hover:underline">Бронирование</Link>
-          </nav>
+        {/* Карта справа — отдельный компонент CafeMap */}
+        <div className="absolute top-[40px] right-[30px] w-[500px] h-[405px] overflow-hidden shadow-lg z-20 transition-all duration-300 ">
+          <CafeMap />
         </div>
-      </div>
-    </main>
-  );
+      </section>
+
+      {/* ПОДВАЛ САЙТА */}
+      <Footer />
+
+    </main>
+  );
 }
